@@ -50,15 +50,14 @@ List<String> randomTail(int numLines, Path file) {
         rbuf.flip()
 
         CharBuffer cbuf = decoder.decode(rbuf)
+        def lines = cbuf.normalize().split('\n')
 
-        if (cbuf.toString().endsWith("\n")) {
-            buf.addAll(0, cbuf.tokenize('\n'))
-        } else {
+        if (!cbuf.toString().endsWith("\n")) { // fix for string which were not read fully
             def lineEnd = buf.remove(0)
-            def lines = cbuf.normalize().split('\n')
             lines[-1] += lineEnd
-            buf.addAll(0, lines)
         }
+
+        buf.addAll(0, lines)
 
         rbuf.clear()
     }

@@ -21,7 +21,7 @@ if (!opts) {
     System.exit(-1)
 }
 
-def numLines = Integer.valueOf(opts.lines) ?: 10
+def numLines = Integer.valueOf(opts.lines ?: 10)
 
 List<String> serialTail(int numLines) {
     def buf = []

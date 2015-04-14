@@ -23,7 +23,7 @@ if (!opts) {
 
 def numLines = Integer.valueOf(opts.lines ?: 10)
 
-List<String> serialTail(int numLines) {
+List<String> serialTail(int numLines, Closure eachLine) {
     def buf = []
     System.in.eachLine { line ->
         buf.add(line)
@@ -31,10 +31,10 @@ List<String> serialTail(int numLines) {
             buf.remove(0)
     }
 
-    buf
+    buf.each { eachLine(it) }
 }
 
-List<String> randomTail(int numLines, Path file) {
+List<String> randomTail(int numLines, Path file, Closure eachLine) {
     def buf = []
 
     FileChannel fc = FileChannel.open(file, StandardOpenOption.READ)
@@ -62,11 +62,11 @@ List<String> randomTail(int numLines, Path file) {
         rbuf.clear()
     }
 
-    buf.drop(buf.size() - numLines)
+    buf.drop(buf.size() - numLines).each { eachLine(it) }
 }
 
-if (!opts.arguments()) {
-    print(serialTail(numLines).join("\n"))
+if (opts.arguments()) {
+    randomTail(numLines, Paths.get(opts.arguments()[0])) { println(it) }
 } else {
-    print(randomTail(numLines, Paths.get(opts.arguments()[0])).join("\n"))
+    serialTail(numLines) { println(it) }
 }
